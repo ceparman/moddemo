@@ -1,0 +1,14 @@
+{
+"tables":{
+  
+  "table1": {
+    "type": "tab_mod",
+    "title": "Table based on Module modtab",
+    "config": []
+  }
+
+},
+
+"listings" : {},
+"graphs"   :{}
+}  
