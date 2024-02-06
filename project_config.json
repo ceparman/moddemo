@@ -1,12 +1,12 @@
 {
-"project": { 
+"project": { },
   
 "tables":{
   
   "table1": {
-    "type": "tab_mod",
-    "title": "Table based on Module modtab",
-    "config": []
+    "type": "xyplot_mod",
+    "title": "Table based on Module xyplot_mod",
+    "config": {"xcol":"Sepal.Length","ycol":"Sepal.Width"}
   }
 
 },
@@ -17,4 +17,4 @@
   
 }
 
-}
+

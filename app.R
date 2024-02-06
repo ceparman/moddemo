@@ -11,7 +11,8 @@ dplyr[case_when],
 purrr[map_chr],
 jsonlite[read_json],
 app / ui,
-app / modules / project
+app / modules / project,
+app / utils 
 )
 
 
@@ -24,7 +25,7 @@ fns <- tools::list_files_with_exts(fld, "R") |>
      lapply(str2lang)
   
 ## call box::use with the the newly created list
-  do.call(box::use, fns)
+do.call(box::use, fns)
 
 
 
@@ -40,6 +41,10 @@ proj_config <- reactiveVal ( read_json("project_config.json") )
 
 
 
+#setup data
+
+data <- reactiveVal(iris)
+
 
 
 #Initialize app with existing tables
@@ -48,27 +53,40 @@ proj_config <- reactiveVal ( read_json("project_config.json") )
 
 #don't want his to be reactive, only runs at startup
 
-tables <-read_json("saved_tables.json")$tables
+project_start <- read_json("project_config.json")
 
-n <- length(tables)
+#load <- utils$load_project(project=project_start,data=data)
+
+
+#tables <-read_json("saved_tables.json")$tables
+
+
+
+
+
+#load tables
+n <- length(project_start$tables)
 
 if (n >0) {
   
   for (i in 1:n){
- 
-    mod <- tables[[i]]$type
+    
+    mod <- project_start$tables[[i]]$type
+    
+    config <-project_start$tables[[i]]$config
+    
+   config <-     do.call(get(mod)$server, list(id=paste0("table",i),data=data, config= config ) )
   
-    
-    do.call(get(mod)$server, list(id=paste0("table",i) ) )
-    
-    
   }
-  
-  
-  
   
 }
 
+
+
+
+#load graphs  
+
+#load listing  
 
 
 
@@ -191,27 +209,24 @@ add_table <- function(input,current_tables) {
   
   n <- length(current_tables() ) +1
   
-  #  call module
+#  #  call module
   
-#  mod <-   tlgs[[tolower(input$object_type)]][[input$object_id]]$call
+##  mod <-   tlgs[[tolower(input$object_type)]][[input$object_id]]$call
   
- # do.call(get(mod)$server, list(id=paste0(tolower(input$object_type),n) ) ) 
+# # do.call(get(mod)$server, list(id=paste0(tolower(input$object_type),n) ) ) 
   
-  # mod_test$server(paste0("table",n) )
+#  # mod_test$server(paste0("table",n) )
   
 
   
   mod <-input$object_id 
   
   
-  do.call(get(mod)$server, list(id=paste0("table",n) ) )
+  do.call(get(mod)$server, list(id=paste0("table",n),data=data ) )
+
   
   
-  
-  
-  
-  
-  #add to menu  
+  #add to current table, reactive will update menu 
   current_tables( c(current_tables(),
                     
                     list( newtable = list( type = input$object_id,
@@ -220,7 +235,6 @@ add_table <- function(input,current_tables) {
   ))
   
   
- 
   
 }  
 
@@ -229,46 +243,43 @@ add_table <- function(input,current_tables) {
   
   output$ui_out <- renderUI( {
     
-    current_tables <- current_tables()
-    n <- length(current_tables)
     
- #   mod <-   current_tables[[i]]$type
-   # 
+#Build tab items list     
 
-
+#main project page  
     
 project_item <- list( project = tabItem(tabName = "project", 
                         project$ui(id="project"))
 )
-    
-  if(  n> 0) {
-    table_items <-lapply(1:n,function(i){
-      tabItem(tabName = paste0("table",i) ,
-           
-              do.call(get( current_tables[[i]]$type)$ui, list(id=  paste0("table",i) ))        
-              
-           #     tab_mod$ui( paste0("table",i))
-            
-     #     do.call(get( current_tables[[i]]$type)$ui, list(id=  current_tables[[i]]$title ) )   
-              
-      ) 
-    }
-    
-    )
-    #print(length(items))
-    #do.call(tabItems,items)
-    
-    
-    tabItemsl <- function (...) 
-    {
-      lapply(..., shinydashboard:::tagAssert, class = "tab-pane")
-      div(class = "tab-content", ...)
-    }
-    
-    
-    tabItemsl(c(project_item,table_items))
+ 
+#tables
 
-  } 
+current_tables <- current_tables()
+n <- length(current_tables)
+
+
+  if(  n> 0) {
+    table_items <- lapply(1:n, function(i) {
+      tabItem(tabName = paste0("table", i) ,
+              do.call(get(current_tables[[i]]$type)$ui, list(id =  paste0("table", i))))
+    })
+
+ 
+#figures    
+       
+figure_items <- list()    
+
+#listing items
+
+listing_tems <- list()
+    
+utils$tabItemsl(c(project_item,table_items))
+
+} 
+  
+
+
+
   
     
   })
@@ -324,6 +335,8 @@ project_item <- list( project = tabItem(tabName = "project",
     # 
     
   })
+  
+  
   
 }
 

@@ -13,7 +13,7 @@ ui <-  function(id ){
 )
 }
 
-server <- function(id) {
+server <- function(id,name=NULL,data=NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -23,7 +23,8 @@ server <- function(id) {
     
     tagList(
       h3("Module tab_mod"),
-      h3(paste("Id is ",id))
+      h3(paste("Id is ",id)),
+      h3(nrow(data()))
     )
     
   )
