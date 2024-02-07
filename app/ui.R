@@ -29,7 +29,9 @@ dashboardPage(
       h5("Content"),
       fluidRow(
         column(3,actionButton("object_add", "Add")),
-        column(3,actionButton("object_remove", "Remove"))
+        column(3,actionButton("object_remove", "Remove")),
+        column(3,actionButton("object_save", "Save"))
+        
       )
 
     )

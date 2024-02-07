@@ -40,12 +40,28 @@ server <- function(input, output) {
 proj_config <- reactiveVal ( read_json("project_config.json") )  
 
 
+#Run project UI
+
+project$server("project")
+
+
+
+
+
 
 #setup data
 
 data <- reactiveVal(iris)
 
 
+#Read in stored tables this will trigger the menu update
+
+current_tables <- reactiveVal( read_json("saved_tables.json")$tables ) 
+
+
+#Reactive to hold modules return values
+
+mod_return_val <- reactiveValues()
 
 #Initialize app with existing tables
 
@@ -60,39 +76,60 @@ project_start <- read_json("project_config.json")
 
 #tables <-read_json("saved_tables.json")$tables
 
+#load project module
 
 
+#main project page  
+
+project_item <- list( project = tabItem(tabName = "project", 
+                                        project$ui(id="project"))
+)
+
+#tables
+
+current_start_tables <- read_json("saved_tables.json")$tables 
+n <- length(current_start_tables)
 
 
-#load tables
-n <- length(project_start$tables)
-
-if (n >0) {
+if(  n> 0) {
+  table_items <- lapply(1:n, function(i) {
+    tabItem(tabName = paste0("table", i) ,
+            do.call(get(current_start_tables[[i]]$type)$ui, list(id =  paste0("table", i))))
+  })
+  
   
   for (i in 1:n){
-    
-    mod <- project_start$tables[[i]]$type
-    
-    config <-project_start$tables[[i]]$config
-    
-   config <-     do.call(get(mod)$server, list(id=paste0("table",i),data=data, config= config ) )
+  mod <- project_start$tables[[i]]$type
   
-  }
+  config <- project_start$tables[[i]]$config
   
-}
+  cofig <- do.call(get(mod)$server, list=())
+  
+  
+  #figures    
+  
+  figure_items <- list()    
+  
+  #listing items
+  
+  listing_tems <- list()
+  
+  utils$tabItemsl(c(project_item,table_items))
+  
+} 
 
 
 
 
-#load graphs  
-
-#load listing  
 
 
 
-#Read in stored tables this will trigger the menu update
 
-current_tables <- reactiveVal( read_json("saved_tables.json")$tables ) 
+
+
+
+
+
 
 
 
@@ -196,6 +233,9 @@ observeEvent(input$add_object,{
   
   
   add_table(input,current_tables)
+  
+  
+  browser()
   
   removeModal()
   

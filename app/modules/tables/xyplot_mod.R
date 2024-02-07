@@ -28,7 +28,7 @@ server <- function(id,name=NULL,data=NULL,config=NULL) {
     function(input, output, session) {
   ns <- session$ns
 
-browser()
+
   
   output$inputs <- renderUI({
 
