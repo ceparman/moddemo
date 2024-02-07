@@ -1,5 +1,7 @@
 #app.R
 
+source("global.R")
+
 rm(list = ls(box:::loaded_mods),envir = box:::loaded_mods)
 options("box_path" = getwd())
 
@@ -46,11 +48,16 @@ server <- function(input, output) {
 proj_config <- reactiveVal ( read_json(config_path) )  
 
 
+project_data <- list(project_config = proj_config,
+                     config_path = config_path)
 
+#Reactive to hold modules return values
+
+mod_return_val <- reactiveValues()
 
 #Run project UI
 
-project$server("project")
+project$server("project",project_data = project_data,mod_return_val)
 
 
 
@@ -67,9 +74,6 @@ data <- reactiveVal(iris)
 current_tables <- reactiveVal( read_json(config_path)$tables ) 
 
 
-#Reactive to hold modules return values
-
-mod_return_val <- reactiveValues()
 
 #Initialize app with existing tables
 
@@ -79,10 +83,7 @@ mod_return_val <- reactiveValues()
 
 project_start <- read_json("project_config.json")
 
-#load <- utils$load_project(project=project_start,data=data)
 
-
-#tables <-read_json("saved_tables.json")$tables
 
 #load project module
 
@@ -95,7 +96,10 @@ project_item <- list( project = tabItem(tabName = "project",
 
 #tables
 
-current_start_tables <- read_json("saved_tables.json")$tables 
+
+
+current_start_tables <- project_start$tables 
+
 n <- length(current_start_tables)
 
 
@@ -111,7 +115,8 @@ if(  n> 0) {
   
   config <- project_start$tables[[i]]$config
   
-  config_r <- do.call(get(mod)$server,
+  mod_return_val[[project_start$tables[[i]]$title]] <- 
+                   do.call(get(mod)$server,
                    list(id=paste0("table",i),data=data, config= config ) )
   }
   

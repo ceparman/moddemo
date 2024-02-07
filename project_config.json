@@ -5,9 +5,16 @@
   
   "table1": {
     "type": "xyplot_mod",
-    "title": "Table based on Module xyplot_mod",
+    "title": "Plot based on Module xyplot_mod",
     "config": {"xcol":"Sepal.Length","ycol":"Sepal.Width"}
+  },
+  
+  "table2": {
+    "type": "xyplot_mod",
+    "title": "xyplot_mod",
+    "config": {"xcol":"Petal.Length","ycol":"Petal.Width"}
   }
+  
 
 },
 

@@ -29,6 +29,13 @@ server <- function(id,name=NULL,data=NULL,config=NULL) {
   ns <- session$ns
 
 
+  current_config <-reactive({
+    
+   list(xcol=input$xcol,ycol=input$ycol) 
+    
+    
+  })
+  
   
   output$inputs <- renderUI({
 
@@ -64,7 +71,7 @@ server <- function(id,name=NULL,data=NULL,config=NULL) {
 #  config <- reactive({list(xcol=input$xcol,ycol=input$ycol) })
   
    
-  return( reactive({config=list(xcol=input$xcol,ycol=input$ycol) }))    
+  return(current_config)    
     }
   
 
