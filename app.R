@@ -27,7 +27,7 @@ fns <- tools::list_files_with_exts(fld, "R") |>
 ## call box::use with the the newly created list
 do.call(box::use, fns)
 
-
+config_path <- "project_config.json"
 
 
 
@@ -36,8 +36,16 @@ ui <- ui$ui
 
 server <- function(input, output) { 
   
+  
 
-proj_config <- reactiveVal ( read_json("project_config.json") )  
+# Initialize --------------------------------------------------------------
+
+
+  
+
+proj_config <- reactiveVal ( read_json(config_path) )  
+
+
 
 
 #Run project UI
@@ -56,7 +64,7 @@ data <- reactiveVal(iris)
 
 #Read in stored tables this will trigger the menu update
 
-current_tables <- reactiveVal( read_json("saved_tables.json")$tables ) 
+current_tables <- reactiveVal( read_json(config_path)$tables ) 
 
 
 #Reactive to hold modules return values
@@ -103,8 +111,9 @@ if(  n> 0) {
   
   config <- project_start$tables[[i]]$config
   
-  cofig <- do.call(get(mod)$server, list=())
-  
+  config_r <- do.call(get(mod)$server,
+                   list(id=paste0("table",i),data=data, config= config ) )
+  }
   
   #figures    
   
@@ -122,13 +131,16 @@ if(  n> 0) {
 
 
 
+# uiOutputs ---------------------------------------------------------------
 
 
+output$project <- renderMenu({
+  proj_config()
+
+  menuItem("Project",tabName="project" )
 
 
-
-
-
+})
 
 
 

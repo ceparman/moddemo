@@ -17,10 +17,11 @@ dashboardPage(
     
     sidebarMenu(
       
-      menuItem("Project Configuration", tabName = "project", icon = icon("gear")),
-      hr(),
-    
+      #menuItem("Project Configuration", tabName = "project", icon = icon("gear")),
       
+      menuItemOutput("project"),
+      
+       hr(),
       menuItemOutput("tables"),
       menuItemOutput("listings"),
       menuItemOutput("graphs"),
