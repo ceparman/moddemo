@@ -1,5 +1,6 @@
 box::use(
-  shiny[...]
+  shiny[...],
+  DT[...]
 )
 
 
@@ -20,14 +21,29 @@ server <- function(id,project_data,mod_return_val) {
     function(input, output, session) {
   ns <- session$ns
 
+  
+  
   output$ui_out <- renderUI({
   
     tagList(
       h3("Project Tab"),
-      h3(paste("Id is ",id))
+      h3(paste("Id is ",id)),
+     DTOutput(ns("modules"))
+      
+      
       )
     
   })
+  
+output$modules <- renderDT({
+  
+  
+  
+  
+  datatable(data.frame(names=names(mod_return_val)))
+  
+})  
+  
     
 observeEvent(input$browse,
              browser())  

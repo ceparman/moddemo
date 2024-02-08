@@ -141,7 +141,8 @@ if(  n> 0) {
 
 output$project <- renderMenu({
   proj_config()
-
+  
+  current_tables()
   menuItem("Project",tabName="project" )
 
 
@@ -252,7 +253,7 @@ observeEvent(input$add_object,{
   add_table(input,current_tables)
   
   
-  browser()
+
   
   removeModal()
   
@@ -277,9 +278,10 @@ add_table <- function(input,current_tables) {
 
   
   mod <-input$object_id 
+  id <- paste0("table",n)
+  name <- input$table_title
   
-  
-  do.call(get(mod)$server, list(id=paste0("table",n),data=data ) )
+  mod_return_val[[name]] <- do.call(get(mod)$server, list(id=id,data=data ) )
 
   
   
