@@ -31,7 +31,7 @@ server <- function(id,name=NULL,data=NULL,config=NULL) {
 
   current_config <-reactive({
     
-   list(xcol=input$xcol,ycol=input$ycol) 
+    config=list(xcol=input$xcol,ycol=input$ycol) 
     
     
   })
